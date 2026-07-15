@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Sparkles, Loader2 } from 'lucide-react'
 import { useAuth } from '@/components/auth-provider'
 import { createReview } from '@/lib/store'
+import { createSentence } from '@/lib/sentences'
 import type { FeedbackResult } from '@/types/feedback'
 import type { Word } from '@/types/word'
 import { Button } from '@/components/ui/button'
@@ -22,33 +23,52 @@ export function SentenceForm({ word }: { word: Word }) {
       router.push('/auth/login')
       return
     }
+
     if (!text.trim()) {
       setError('文章を入力してください。')
       return
     }
+
     setError(null)
     setLoading(true)
+
     try {
+      const originalText = text.trim()
+
+      await createSentence({
+        userId: user.id,
+        wordId: word.id,
+        originalText,
+      })
+
       const res = await fetch('/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text: originalText }),
       })
+
       if (!res.ok) {
         const data = await res.json().catch(() => null)
         throw new Error(data?.error ?? '添削に失敗しました。')
       }
+
       const feedback = (await res.json()) as FeedbackResult
+
       const record = createReview({
         userId: user.id,
         wordId: word.id,
         word: word.word,
-        originalText: text.trim(),
+        originalText,
         feedback,
       })
+
       router.push(`/review/${record.id}`)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '添削に失敗しました。')
+      setError(
+        e instanceof Error
+          ? e.message
+          : '文章の保存または添削に失敗しました。',
+      )
       setLoading(false)
     }
   }
@@ -62,6 +82,7 @@ export function SentenceForm({ word }: { word: Word }) {
         >
           「{word.word}」を使って文章を書いてみましょう
         </label>
+
         <Textarea
           id="sentence"
           value={text}
@@ -71,6 +92,7 @@ export function SentenceForm({ word }: { word: Word }) {
           className="resize-none bg-card text-base leading-relaxed"
           disabled={loading}
         />
+
         <p className="text-xs text-muted-foreground">
           {text.length} 文字
         </p>

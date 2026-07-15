@@ -12,7 +12,7 @@ export default async function WordDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const word = getWordById(id)
+  const word = await getWordById(id)
   if (!word) notFound()
 
   return (

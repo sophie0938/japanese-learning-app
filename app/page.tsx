@@ -1,8 +1,10 @@
 import { Header } from '@/components/header'
 import { WordGrid } from '@/components/word-grid'
-import { WORDS } from '@/lib/words'
+import { getWords } from '@/lib/words'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const words = await getWords()
+
   return (
     <div className="min-h-dvh">
       <Header />
@@ -20,7 +22,7 @@ export default function HomePage() {
           <h2 className="mb-4 text-sm font-semibold text-muted-foreground">
             単語一覧
           </h2>
-          <WordGrid words={WORDS} />
+          <WordGrid words={words} />
         </section>
       </main>
     </div>

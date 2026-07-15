@@ -8,12 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-
-/**
- * プロトタイプ用の認証コンテキスト。
- * 後で Supabase Auth に差し替えます（signup / login / logout / session）。
- * 現状は localStorage にユーザー情報を保持するだけのモックです。
- */
+import { supabase } from '@/lib/supabase'
 
 export interface AuthUser {
   id: string
@@ -25,10 +20,8 @@ interface AuthContextValue {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   signup: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
-
-const STORAGE_KEY = 'kotonoha.auth.user'
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
@@ -37,40 +30,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setUser(JSON.parse(raw))
-    } catch {
-      // ignore
+    async function getSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email ?? '',
+        })
+      } else {
+        setUser(null)
+      }
+
+      setLoading(false)
     }
-    setLoading(false)
+
+    getSession()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email ?? '',
+        })
+      } else {
+        setUser(null)
+      }
+      setLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
-  const persist = useCallback((next: AuthUser | null) => {
-    setUser(next)
-    if (next) localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    else localStorage.removeItem(STORAGE_KEY)
+  const login = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      throw new Error(error.message)
+    }
   }, [])
 
-  const login = useCallback(
-    async (email: string, _password: string) => {
-      // 後で Supabase Auth の signInWithPassword に差し替え
-      persist({ id: `user-${email}`, email })
-    },
-    [persist],
-  )
+  const signup = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
 
-  const signup = useCallback(
-    async (email: string, _password: string) => {
-      // 後で Supabase Auth の signUp に差し替え
-      persist({ id: `user-${email}`, email })
-    },
-    [persist],
-  )
+    if (error) {
+      throw new Error(error.message)
+    }
+  }, [])
 
-  const logout = useCallback(() => {
-    persist(null)
-  }, [persist])
+  const logout = useCallback(async () => {
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    setUser(null)
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
