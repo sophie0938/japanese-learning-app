@@ -4,6 +4,7 @@ export interface AiFeedback {
   correctedText: string
   reason: string
   createdAt: string
+  saved: boolean
 }
 
 /** OpenAI から返却される添削結果の生データ */

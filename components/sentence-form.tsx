@@ -1,10 +1,10 @@
 'use client'
 
+import { createFeedback } from '@/lib/feedbacks'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sparkles, Loader2 } from 'lucide-react'
 import { useAuth } from '@/components/auth-provider'
-import { createReview } from '@/lib/store'
 import { createSentence } from '@/lib/sentences'
 import type { FeedbackResult } from '@/types/feedback'
 import type { Word } from '@/types/word'
@@ -35,7 +35,7 @@ export function SentenceForm({ word }: { word: Word }) {
     try {
       const originalText = text.trim()
 
-      await createSentence({
+      const sentence = await createSentence({
         userId: user.id,
         wordId: word.id,
         originalText,
@@ -54,15 +54,13 @@ export function SentenceForm({ word }: { word: Word }) {
 
       const feedback = (await res.json()) as FeedbackResult
 
-      const record = createReview({
-        userId: user.id,
-        wordId: word.id,
-        word: word.word,
-        originalText,
-        feedback,
-      })
+      const createdFeedback = await createFeedback({
+        sentenceId: sentence.id,
+        correctedText: feedback.correctedText,
+        reason: feedback.reason,
+})
 
-      router.push(`/review/${record.id}`)
+router.push(`/review/${createdFeedback.id}`)
     } catch (e) {
       setError(
         e instanceof Error
