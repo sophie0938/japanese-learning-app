@@ -30,41 +30,54 @@ export async function POST(request: Request) {
       )
     }
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `
-あなたは日本語学習者向けの文章添削者です。
+    // AI応答時間を計測
+    console.time('Gemini generation')
 
-次の日本語の文章を添削してください。
+    const response = await ai.models.generateContent({
+      // 速度重視モデル
+      model: 'gemini-3.1-flash-lite',
+
+      contents: `
+あなたは日本語学習者向けの添削AIです。
+
+以下の文章を添削してください。
 
 入力文章：
 ${text}
 
-添削方針：
-- 文法、助詞、語順、語彙の使い方を確認する
-- 意味を大きく変えず、自然な日本語に修正する
-- 正しい文章の場合は無理に変更しない
-- correctedTextには修正後の文章だけを入れる
-- reasonには修正点と理由を、日本語学習者にも分かる簡潔な日本語で入れる
-      `.trim(),
+ルール
+- 文法・助詞・語順・語彙を確認する
+- 意味は変えない
+- 自然な日本語へ修正する
+- 正しい文章なら変更しない
+- correctedTextには修正文のみ
+- reasonは100文字以内で簡潔に説明する
+`.trim(),
+
       config: {
+        // 出力を短く制限
+        maxOutputTokens: 300,
+
         responseMimeType: 'application/json',
+
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             correctedText: {
               type: Type.STRING,
-              description: '自然で文法的に正しい日本語へ修正した文章',
+              description: '修正後の文章',
             },
             reason: {
               type: Type.STRING,
-              description: '修正箇所と修正理由の簡潔な説明',
+              description: '修正理由（100文字以内）',
             },
           },
           required: ['correctedText', 'reason'],
         },
       },
     })
+
+    console.timeEnd('Gemini generation')
 
     if (!response.text) {
       throw new Error('Geminiから添削結果を取得できませんでした。')
@@ -81,8 +94,12 @@ ${text}
     console.error('Gemini review error:', error)
 
     return NextResponse.json(
-      { error: 'AI添削に失敗しました。時間を置いて再度お試しください。' },
-      { status: 500 },
+      {
+        error: 'AI添削に失敗しました。時間を置いて再度お試しください。',
+      },
+      {
+        status: 500,
+      },
     )
   }
 }

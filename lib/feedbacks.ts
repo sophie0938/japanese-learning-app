@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { AiFeedback } from '@/types/feedback'
+import type { HistoryRecord } from '@/types/history'
 
 interface AiFeedbackRow {
   id: string
@@ -88,4 +89,56 @@ export async function saveFeedback(id: string): Promise<void> {
     console.error('Failed to save feedback:', error)
     throw new Error('添削結果の保存に失敗しました。')
   }
+}
+
+interface HistoryRow {
+  id: string
+  corrected_text: string
+  created_at: string
+  user_sentences: {
+    word_id: string
+    original_text: string
+    words: {
+      word: string
+    } | null
+  } | null
+}
+
+export async function getSavedFeedbackHistory(
+  userId: string,
+): Promise<HistoryRecord[]> {
+  const { data, error } = await supabase
+    .from('ai_feedbacks')
+    .select(`
+      id,
+      corrected_text,
+      created_at,
+      user_sentences!inner (
+        word_id,
+        original_text,
+        user_id,
+        words (
+          word
+        )
+      )
+    `)
+    .eq('saved', true)
+    .eq('user_sentences.user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Failed to fetch feedback history:', error)
+    throw new Error('学習履歴の取得に失敗しました。')
+  }
+
+  return ((data ?? []) as unknown as HistoryRow[])
+    .filter((row) => row.user_sentences?.words)
+    .map((row) => ({
+      id: row.id,
+      wordId: row.user_sentences!.word_id,
+      word: row.user_sentences!.words!.word,
+      originalText: row.user_sentences!.original_text,
+      correctedText: row.corrected_text,
+      createdAt: row.created_at,
+    }))
 }

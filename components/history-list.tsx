@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Check, PenLine } from 'lucide-react'
-import type { ReviewRecord } from '@/lib/store'
+import type { HistoryRecord } from '@/types/history'
 import { Badge } from '@/components/ui/badge'
 
 function formatDate(iso: string) {
@@ -10,7 +10,11 @@ function formatDate(iso: string) {
   ).padStart(2, '0')}`
 }
 
-export function HistoryList({ records }: { records: ReviewRecord[] }) {
+export function HistoryList({
+  records,
+}: {
+  records: HistoryRecord[]
+}) {
   if (records.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card/50 px-6 py-12 text-center">

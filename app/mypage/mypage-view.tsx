@@ -6,13 +6,17 @@ import { useRouter } from 'next/navigation'
 import { LogOut, Mail } from 'lucide-react'
 import { useAuth } from '@/components/auth-provider'
 import { HistoryList } from '@/components/history-list'
-import { getHistory, type ReviewRecord } from '@/lib/store'
+import { getSavedFeedbackHistory } from '@/lib/feedbacks'
+import type { HistoryRecord } from '@/types/history'
 import { Button } from '@/components/ui/button'
 
 export function MyPageView() {
   const { user, loading, logout } = useAuth()
   const router = useRouter()
-  const [records, setRecords] = useState<ReviewRecord[]>([])
+
+  const [records, setRecords] = useState<HistoryRecord[]>([])
+  const [historyLoading, setHistoryLoading] = useState(true)
+  const [historyError, setHistoryError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -21,11 +25,33 @@ export function MyPageView() {
   }, [loading, user, router])
 
   useEffect(() => {
-    if (user) setRecords(getHistory(user.id))
-  }, [user])
+  if (!user) return
 
-  function handleLogout() {
-    logout()
+  const userId = user.id
+
+  async function loadHistory() {
+    try {
+      setHistoryLoading(true)
+      setHistoryError(null)
+
+      const history = await getSavedFeedbackHistory(userId)
+      setRecords(history)
+    } catch (error) {
+      setHistoryError(
+        error instanceof Error
+          ? error.message
+          : '学習履歴の取得に失敗しました。',
+      )
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
+
+  void loadHistory()
+}, [user])
+
+  async function handleLogout() {
+    await logout()
     router.push('/')
   }
 
@@ -41,11 +67,13 @@ export function MyPageView() {
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Mail className="h-5 w-5" />
           </span>
+
           <div>
             <p className="text-xs text-muted-foreground">ログイン中</p>
             <p className="font-medium text-card-foreground">{user.email}</p>
           </div>
         </div>
+
         <Button
           variant="outline"
           onClick={handleLogout}
@@ -59,12 +87,24 @@ export function MyPageView() {
       {/* 学習履歴 */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">学習履歴</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            学習履歴
+          </h2>
+
           <span className="text-xs text-muted-foreground">
             {records.length} 件
           </span>
         </div>
-        <HistoryList records={records} />
+
+        {historyLoading ? (
+          <div className="h-40 animate-pulse rounded-xl bg-muted/50" />
+        ) : historyError ? (
+          <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {historyError}
+          </p>
+        ) : (
+          <HistoryList records={records} />
+        )}
       </section>
 
       <Link
