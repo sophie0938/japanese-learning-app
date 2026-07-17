@@ -6,7 +6,10 @@ import { useRouter } from 'next/navigation'
 import { LogOut, Mail } from 'lucide-react'
 import { useAuth } from '@/components/auth-provider'
 import { HistoryList } from '@/components/history-list'
-import { getSavedFeedbackHistory } from '@/lib/feedbacks'
+import {
+  deleteFeedbackHistory,
+  getSavedFeedbackHistory,
+} from '@/lib/feedbacks'
 import type { HistoryRecord } from '@/types/history'
 import { Button } from '@/components/ui/button'
 
@@ -17,6 +20,7 @@ export function MyPageView() {
   const [records, setRecords] = useState<HistoryRecord[]>([])
   const [historyLoading, setHistoryLoading] = useState(true)
   const [historyError, setHistoryError] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -25,30 +29,66 @@ export function MyPageView() {
   }, [loading, user, router])
 
   useEffect(() => {
-  if (!user) return
+    if (!user) return
 
-  const userId = user.id
+    const userId = user.id
 
-  async function loadHistory() {
+    async function loadHistory() {
+      try {
+        setHistoryLoading(true)
+        setHistoryError(null)
+
+        const history = await getSavedFeedbackHistory(userId)
+        setRecords(history)
+      } catch (error) {
+        setHistoryError(
+          error instanceof Error
+            ? error.message
+            : '学習履歴の取得に失敗しました。',
+        )
+      } finally {
+        setHistoryLoading(false)
+      }
+    }
+
+    void loadHistory()
+  }, [user])
+
+  async function handleDeleteHistory(
+    record: HistoryRecord,
+  ): Promise<void> {
+    const confirmed = window.confirm(
+      `「${record.word}」の学習履歴を削除しますか？`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
     try {
-      setHistoryLoading(true)
+      setDeletingId(record.id)
       setHistoryError(null)
 
-      const history = await getSavedFeedbackHistory(userId)
-      setRecords(history)
+      await deleteFeedbackHistory({
+        feedbackId: record.id,
+        sentenceId: record.sentenceId,
+      })
+
+      setRecords((currentRecords) =>
+        currentRecords.filter(
+          (currentRecord) => currentRecord.id !== record.id,
+        ),
+      )
     } catch (error) {
       setHistoryError(
         error instanceof Error
           ? error.message
-          : '学習履歴の取得に失敗しました。',
+          : '学習履歴の削除に失敗しました。',
       )
     } finally {
-      setHistoryLoading(false)
+      setDeletingId(null)
     }
   }
-
-  void loadHistory()
-}, [user])
 
   async function handleLogout() {
     await logout()
@@ -70,7 +110,9 @@ export function MyPageView() {
 
           <div>
             <p className="text-xs text-muted-foreground">ログイン中</p>
-            <p className="font-medium text-card-foreground">{user.email}</p>
+            <p className="font-medium text-card-foreground">
+              {user.email}
+            </p>
           </div>
         </div>
 
@@ -103,7 +145,11 @@ export function MyPageView() {
             {historyError}
           </p>
         ) : (
-          <HistoryList records={records} />
+          <HistoryList
+            records={records}
+            deletingId={deletingId}
+            onDelete={handleDeleteHistory}
+          />
         )}
       </section>
 

@@ -58,3 +58,26 @@ export async function getSentence(
 
   return data ? mapUserSentence(data as UserSentenceRow) : undefined
 }
+
+export async function updateSentence(input: {
+  sentenceId: string
+  originalText: string
+}): Promise<void> {
+  const { data, error } = await supabase
+    .from('user_sentences')
+    .update({
+      original_text: input.originalText,
+    })
+    .eq('id', input.sentenceId)
+    .select('id')
+    .single()
+
+  if (error) {
+    console.error('Failed to update sentence:', error)
+    throw new Error('文章の更新に失敗しました。')
+  }
+
+  if (!data) {
+    throw new Error('更新する文章が見つかりませんでした。')
+  }
+}
