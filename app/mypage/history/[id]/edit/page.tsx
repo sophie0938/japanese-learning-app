@@ -99,21 +99,21 @@ export default function EditHistoryPage() {
         }),
       })
 
-      const result = (await response.json()) as
+      const reviewResult = (await response.json()) as
         | FeedbackResult
         | { error?: string }
 
       if (!response.ok) {
         throw new Error(
-          'error' in result && result.error
-            ? result.error
+          'error' in reviewResult && reviewResult.error
+            ? reviewResult.error
             : 'AI添削に失敗しました。',
         )
       }
 
       if (
-        !('correctedText' in result) ||
-        !('reason' in result)
+        !('correctedText' in reviewResult) ||
+        !('reason' in reviewResult)
       ) {
         throw new Error('AIの添削結果が正しくありません。')
       }
@@ -125,8 +125,8 @@ export default function EditHistoryPage() {
 
       await updateFeedback({
         feedbackId: record.id,
-        correctedText: result.correctedText,
-        reason: result.reason,
+        correctedText: reviewResult.correctedText,
+        reason: reviewResult.reason,
       })
 
       router.push('/mypage')
