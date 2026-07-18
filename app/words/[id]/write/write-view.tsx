@@ -1,11 +1,11 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { Lock, Quote } from 'lucide-react'
-import { useAuth } from '@/components/auth-provider'
-import { SentenceForm } from '@/components/sentence-form'
-import { Button } from '@/components/ui/button'
-import type { Word } from '@/types/word'
+import Link from "next/link"
+import { Lock, Quote } from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
+import { SentenceForm } from "@/components/sentence-form"
+import { Button } from "@/components/ui/button"
+import type { Word } from "@/types/word"
 
 export function WriteView({ word }: { word: Word }) {
   const { user, loading } = useAuth()

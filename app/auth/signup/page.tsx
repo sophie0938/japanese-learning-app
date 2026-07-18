@@ -1,5 +1,5 @@
-import { Header } from '@/components/header'
-import { AuthForm } from '@/components/auth-form'
+import { Header } from "@/components/header"
+import { AuthForm } from "@/components/auth-form"
 
 export default function SignupPage() {
   return (

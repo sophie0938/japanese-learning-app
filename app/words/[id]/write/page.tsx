@@ -1,9 +1,9 @@
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
-import { Header } from '@/components/header'
-import { getWordById } from '@/lib/words'
-import { WriteView } from './write-view'
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
+import { Header } from "@/components/header"
+import { getWordById } from "@/lib/words"
+import { WriteView } from "./write-view"
 
 export default async function WritePage({
   params,

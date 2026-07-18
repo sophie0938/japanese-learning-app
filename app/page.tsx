@@ -1,6 +1,6 @@
-import { Header } from '@/components/header'
-import { WordGrid } from '@/components/word-grid'
-import { getWords } from '@/lib/words'
+import { Header } from "@/components/header"
+import { WordGrid } from "@/components/word-grid"
+import { getWords } from "@/lib/words"
 
 export default async function HomePage() {
   const words = await getWords()

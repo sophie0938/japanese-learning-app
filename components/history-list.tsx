@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from "next/link"
 import {
   Check,
   Loader2,
@@ -6,18 +6,18 @@ import {
   PenLine,
   SquarePen,
   Trash2,
-} from 'lucide-react'
+} from "lucide-react"
 
-import type { HistoryRecord } from '@/types/history'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import type { HistoryRecord } from "@/types/history"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 function formatDate(iso: string) {
   const d = new Date(iso)
 
   return `${d.getFullYear()}/${String(
     d.getMonth() + 1,
-  ).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`
+  ).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`
 }
 
 interface HistoryListProps {

@@ -1,6 +1,6 @@
-import { use } from 'react'
-import { Header } from '@/components/header'
-import { ReviewView } from './review-view'
+import { use } from "react"
+import { Header } from "@/components/header"
+import { ReviewView } from "./review-view"
 
 export default function ReviewPage({
   params,

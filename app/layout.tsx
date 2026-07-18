@@ -1,29 +1,29 @@
-import { Analytics } from '@vercel/analytics/next'
-import type { Metadata, Viewport } from 'next'
-import { Noto_Sans_JP, Geist_Mono } from 'next/font/google'
-import './globals.css'
-import { AuthProvider } from '@/components/auth-provider'
+import { Analytics } from "@vercel/analytics/next"
+import type { Metadata, Viewport } from "next"
+import { Noto_Sans_JP, Geist_Mono } from "next/font/google"
+import "./globals.css"
+import { AuthProvider } from "@/components/auth-provider"
 
 const notoSansJP = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  variable: "--font-noto-sans-jp",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
 })
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 })
 
 export const metadata: Metadata = {
-  title: 'ことのは — アウトプット日本語学習ノート',
+  title: "ことのは — アウトプット日本語学習ノート",
   description:
-    '単語を見て、例文を確認し、自分で文章を書き、AIから添削を受ける。静かに続けられる日本語学習アプリ。',
-  generator: 'v0.app',
+    "単語を見て、例文を確認し、自分で文章を書き、AIから添削を受ける。静かに続けられる日本語学習アプリ。",
+  generator: "v0.app",
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
-  themeColor: '#ffffff',
+  colorScheme: "light",
+  themeColor: "#ffffff",
 }
 
 export default function RootLayout({
@@ -38,7 +38,7 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased">
         <AuthProvider>{children}</AuthProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
   )

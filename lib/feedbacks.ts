@@ -1,6 +1,6 @@
-import { supabase } from '@/lib/supabase'
-import type { AiFeedback } from '@/types/feedback'
-import type { HistoryRecord } from '@/types/history'
+import { supabase } from "@/lib/supabase"
+import type { AiFeedback } from "@/types/feedback"
+import type { HistoryRecord } from "@/types/history"
 
 interface AiFeedbackRow {
   id: string
@@ -28,7 +28,7 @@ export async function createFeedback(input: {
   reason: string
 }): Promise<AiFeedback> {
   const { data, error } = await supabase
-    .from('ai_feedbacks')
+    .from("ai_feedbacks")
     .insert({
       sentence_id: input.sentenceId,
       corrected_text: input.correctedText,
@@ -38,8 +38,8 @@ export async function createFeedback(input: {
     .single()
 
   if (error) {
-    console.error('Failed to create feedback:', error)
-    throw new Error('添削結果の保存に失敗しました。')
+    console.error("Failed to create feedback:", error)
+    throw new Error("添削結果の保存に失敗しました。")
   }
 
   return mapAiFeedback(data as AiFeedbackRow)
@@ -49,14 +49,14 @@ export async function getFeedbackBySentenceId(
   sentenceId: string,
 ): Promise<AiFeedback | undefined> {
   const { data, error } = await supabase
-    .from('ai_feedbacks')
-    .select('*')
-    .eq('sentence_id', sentenceId)
+    .from("ai_feedbacks")
+    .select("*")
+    .eq("sentence_id", sentenceId)
     .maybeSingle()
 
   if (error) {
-    console.error('Failed to fetch feedback:', error)
-    throw new Error('添削結果の取得に失敗しました。')
+    console.error("Failed to fetch feedback:", error)
+    throw new Error("添削結果の取得に失敗しました。")
   }
 
   return data ? mapAiFeedback(data as AiFeedbackRow) : undefined
@@ -66,14 +66,14 @@ export async function getFeedbackById(
   id: string,
 ): Promise<AiFeedback | undefined> {
   const { data, error } = await supabase
-    .from('ai_feedbacks')
-    .select('*')
-    .eq('id', id)
+    .from("ai_feedbacks")
+    .select("*")
+    .eq("id", id)
     .maybeSingle()
 
   if (error) {
-    console.error('Failed to fetch feedback:', error)
-    throw new Error('添削結果の取得に失敗しました。')
+    console.error("Failed to fetch feedback:", error)
+    throw new Error("添削結果の取得に失敗しました。")
   }
 
   return data ? mapAiFeedback(data as AiFeedbackRow) : undefined
@@ -81,13 +81,13 @@ export async function getFeedbackById(
 
 export async function saveFeedback(id: string): Promise<void> {
   const { error } = await supabase
-    .from('ai_feedbacks')
+    .from("ai_feedbacks")
     .update({ saved: true })
-    .eq('id', id)
+    .eq("id", id)
 
   if (error) {
-    console.error('Failed to save feedback:', error)
-    throw new Error('添削結果の保存に失敗しました。')
+    console.error("Failed to save feedback:", error)
+    throw new Error("添削結果の保存に失敗しました。")
   }
 }
 
@@ -110,7 +110,7 @@ export async function getSavedFeedbackHistory(
   userId: string,
 ): Promise<HistoryRecord[]> {
   const { data, error } = await supabase
-    .from('ai_feedbacks')
+    .from("ai_feedbacks")
     .select(`
       id,
       sentence_id,
@@ -126,13 +126,13 @@ export async function getSavedFeedbackHistory(
         )
       )
     `)
-    .eq('saved', true)
-    .eq('user_sentences.user_id', userId)
-    .order('created_at', { ascending: false })
+    .eq("saved", true)
+    .eq("user_sentences.user_id", userId)
+    .order("created_at", { ascending: false })
 
   if (error) {
-    console.error('Failed to fetch feedback history:', error)
-    throw new Error('学習履歴の取得に失敗しました。')
+    console.error("Failed to fetch feedback history:", error)
+    throw new Error("学習履歴の取得に失敗しました。")
   }
 
   return ((data ?? []) as unknown as HistoryRow[])
@@ -156,20 +156,20 @@ export async function deleteFeedbackHistory(input: {
     data: deletedFeedbacks,
     error: feedbackError,
   } = await supabase
-    .from('ai_feedbacks')
+    .from("ai_feedbacks")
     .delete()
-    .eq('id', input.feedbackId)
-    .select('id')
+    .eq("id", input.feedbackId)
+    .select("id")
 
   if (feedbackError) {
-    console.error('Failed to delete feedback:', feedbackError)
-    throw new Error('添削結果の削除に失敗しました。')
+    console.error("Failed to delete feedback:", feedbackError)
+    throw new Error("添削結果の削除に失敗しました。")
   }
 
   if (!deletedFeedbacks || deletedFeedbacks.length === 0) {
-    console.error('Feedback was not deleted:', input.feedbackId)
+    console.error("Feedback was not deleted:", input.feedbackId)
     throw new Error(
-      '添削結果を削除できませんでした。削除権限を確認してください。',
+      "添削結果を削除できませんでした。削除権限を確認してください。",
     )
   }
 
@@ -177,20 +177,20 @@ export async function deleteFeedbackHistory(input: {
     data: deletedSentences,
     error: sentenceError,
   } = await supabase
-    .from('user_sentences')
+    .from("user_sentences")
     .delete()
-    .eq('id', input.sentenceId)
-    .select('id')
+    .eq("id", input.sentenceId)
+    .select("id")
 
   if (sentenceError) {
-    console.error('Failed to delete sentence:', sentenceError)
-    throw new Error('元の文章の削除に失敗しました。')
+    console.error("Failed to delete sentence:", sentenceError)
+    throw new Error("元の文章の削除に失敗しました。")
   }
 
   if (!deletedSentences || deletedSentences.length === 0) {
-    console.error('Sentence was not deleted:', input.sentenceId)
+    console.error("Sentence was not deleted:", input.sentenceId)
     throw new Error(
-      '元の文章を削除できませんでした。削除権限を確認してください。',
+      "元の文章を削除できませんでした。削除権限を確認してください。",
     )
   }
 }
@@ -200,7 +200,7 @@ export async function getFeedbackHistoryById(
   userId: string,
 ): Promise<HistoryRecord | undefined> {
   const { data, error } = await supabase
-    .from('ai_feedbacks')
+    .from("ai_feedbacks")
     .select(`
       id,
       sentence_id,
@@ -216,13 +216,13 @@ export async function getFeedbackHistoryById(
         )
       )
     `)
-    .eq('id', feedbackId)
-    .eq('user_sentences.user_id', userId)
+    .eq("id", feedbackId)
+    .eq("user_sentences.user_id", userId)
     .maybeSingle()
 
   if (error) {
-    console.error('Failed to fetch feedback history:', error)
-    throw new Error('編集する学習履歴の取得に失敗しました。')
+    console.error("Failed to fetch feedback history:", error)
+    throw new Error("編集する学習履歴の取得に失敗しました。")
   }
 
   if (!data) {
@@ -253,21 +253,21 @@ export async function updateFeedback(input: {
   reason: string
 }): Promise<void> {
   const { data, error } = await supabase
-    .from('ai_feedbacks')
+    .from("ai_feedbacks")
     .update({
       corrected_text: input.correctedText,
       reason: input.reason,
     })
-    .eq('id', input.feedbackId)
-    .select('id')
+    .eq("id", input.feedbackId)
+    .select("id")
     .single()
 
   if (error) {
-    console.error('Failed to update feedback:', error)
-    throw new Error('添削結果の更新に失敗しました。')
+    console.error("Failed to update feedback:", error)
+    throw new Error("添削結果の更新に失敗しました。")
   }
 
   if (!data) {
-    throw new Error('更新する添削結果が見つかりませんでした。')
+    throw new Error("更新する添削結果が見つかりませんでした。")
   }
 }

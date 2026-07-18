@@ -1,31 +1,31 @@
-'use client'
+"use client"
 
-import { createFeedback } from '@/lib/feedbacks'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Sparkles, Loader2 } from 'lucide-react'
-import { useAuth } from '@/components/auth-provider'
-import { createSentence } from '@/lib/sentences'
-import type { FeedbackResult } from '@/types/feedback'
-import type { Word } from '@/types/word'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { createFeedback } from "@/lib/feedbacks"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Sparkles, Loader2 } from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
+import { createSentence } from "@/lib/sentences"
+import type { FeedbackResult } from "@/types/feedback"
+import type { Word } from "@/types/word"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 export function SentenceForm({ word }: { word: Word }) {
   const { user } = useAuth()
   const router = useRouter()
-  const [text, setText] = useState('')
+  const [text, setText] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit() {
     if (!user) {
-      router.push('/auth/login')
+      router.push("/auth/login")
       return
     }
 
     if (!text.trim()) {
-      setError('文章を入力してください。')
+      setError("文章を入力してください。")
       return
     }
 
@@ -41,15 +41,15 @@ export function SentenceForm({ word }: { word: Word }) {
         originalText,
       })
 
-      const res = await fetch('/api/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: originalText }),
       })
 
       if (!res.ok) {
         const data = await res.json().catch(() => null)
-        throw new Error(data?.error ?? '添削に失敗しました。')
+        throw new Error(data?.error ?? "添削に失敗しました。")
       }
 
       const feedback = (await res.json()) as FeedbackResult
@@ -65,7 +65,7 @@ router.push(`/review/${createdFeedback.id}`)
       setError(
         e instanceof Error
           ? e.message
-          : '文章の保存または添削に失敗しました。',
+          : "文章の保存または添削に失敗しました。",
       )
       setLoading(false)
     }

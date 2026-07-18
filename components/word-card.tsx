@@ -1,7 +1,7 @@
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import type { Word } from '@/types/word'
-import { Badge } from '@/components/ui/badge'
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
+import type { Word } from "@/types/word"
+import { Badge } from "@/components/ui/badge"
 
 export function WordCard({ word }: { word: Word }) {
   return (

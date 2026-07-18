@@ -1,18 +1,18 @@
-'use client'
+"use client"
 
-import { FormEvent, useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Loader2, Sparkles } from 'lucide-react'
-import { useAuth } from '@/components/auth-provider'
+import { FormEvent, useEffect, useState } from "react"
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
+import { ArrowLeft, Loader2, Sparkles } from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
 import {
   getFeedbackHistoryById,
   updateFeedback,
-} from '@/lib/feedbacks'
-import { updateSentence } from '@/lib/sentences'
-import type { FeedbackResult } from '@/types/feedback'
-import type { HistoryRecord } from '@/types/history'
-import { Button } from '@/components/ui/button'
+} from "@/lib/feedbacks"
+import { updateSentence } from "@/lib/sentences"
+import type { FeedbackResult } from "@/types/feedback"
+import type { HistoryRecord } from "@/types/history"
+import { Button } from "@/components/ui/button"
 
 export default function EditHistoryPage() {
   const params = useParams<{ id: string }>()
@@ -22,14 +22,14 @@ export default function EditHistoryPage() {
   const feedbackId = params.id
 
   const [record, setRecord] = useState<HistoryRecord | null>(null)
-  const [text, setText] = useState('')
+  const [text, setText] = useState("")
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace('/auth/login')
+      router.replace("/auth/login")
     }
   }, [authLoading, user, router])
 
@@ -51,7 +51,7 @@ export default function EditHistoryPage() {
         )
 
         if (!historyRecord) {
-          setError('編集する学習履歴が見つかりませんでした。')
+          setError("編集する学習履歴が見つかりませんでした。")
           return
         }
 
@@ -61,7 +61,7 @@ export default function EditHistoryPage() {
         setError(
           error instanceof Error
             ? error.message
-            : '学習履歴の取得に失敗しました。',
+            : "学習履歴の取得に失敗しました。",
         )
       } finally {
         setLoading(false)
@@ -81,7 +81,7 @@ export default function EditHistoryPage() {
     const trimmedText = text.trim()
 
     if (!trimmedText) {
-      setError('文章を入力してください。')
+      setError("文章を入力してください。")
       return
     }
 
@@ -89,10 +89,10 @@ export default function EditHistoryPage() {
       setUpdating(true)
       setError(null)
 
-      const response = await fetch('/api/review', {
-        method: 'POST',
+      const response = await fetch("/api/review", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text: trimmedText,
@@ -105,17 +105,17 @@ export default function EditHistoryPage() {
 
       if (!response.ok) {
         throw new Error(
-          'error' in reviewResult && reviewResult.error
+          "error" in reviewResult && reviewResult.error
             ? reviewResult.error
-            : 'AI添削に失敗しました。',
+            : "AI添削に失敗しました。",
         )
       }
 
       if (
-        !('correctedText' in reviewResult) ||
-        !('reason' in reviewResult)
+        !("correctedText" in reviewResult) ||
+        !("reason" in reviewResult)
       ) {
-        throw new Error('AIの添削結果が正しくありません。')
+        throw new Error("AIの添削結果が正しくありません。")
       }
 
       await updateSentence({
@@ -129,13 +129,13 @@ export default function EditHistoryPage() {
         reason: reviewResult.reason,
       })
 
-      router.push('/mypage')
+      router.push("/mypage")
       router.refresh()
     } catch (error) {
       setError(
         error instanceof Error
           ? error.message
-          : '学習履歴の更新に失敗しました。',
+          : "学習履歴の更新に失敗しました。",
       )
     } finally {
       setUpdating(false)
@@ -155,7 +155,7 @@ export default function EditHistoryPage() {
       <main className="mx-auto max-w-2xl px-4 py-8">
         <div className="rounded-xl border border-border bg-card p-6">
           <p className="text-sm text-destructive">
-            {error ?? '学習履歴が見つかりませんでした。'}
+            {error ?? "学習履歴が見つかりませんでした。"}
           </p>
 
           <Link

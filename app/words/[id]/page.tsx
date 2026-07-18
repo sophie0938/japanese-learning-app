@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { ArrowLeft, PenLine, Quote } from 'lucide-react'
-import { Header } from '@/components/header'
-import { getWordById } from '@/lib/words'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { ArrowLeft, PenLine, Quote } from "lucide-react"
+import { Header } from "@/components/header"
+import { getWordById } from "@/lib/words"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 export default async function WordDetailPage({
   params,

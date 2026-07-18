@@ -1,4 +1,4 @@
-import { Check, PenLine, Lightbulb } from 'lucide-react'
+import { Check, PenLine, Lightbulb } from "lucide-react"
 
 interface FeedbackCardProps {
   originalText: string
@@ -43,7 +43,7 @@ export function FeedbackCard({
         </div>
         <ul className="flex flex-col gap-2">
           {reason
-            .split('\n')
+            .split("\n")
             .filter(Boolean)
             .map((line, i) => (
               <li

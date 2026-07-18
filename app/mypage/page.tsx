@@ -1,5 +1,5 @@
-import { Header } from '@/components/header'
-import { MyPageView } from './mypage-view'
+import { Header } from "@/components/header"
+import { MyPageView } from "./mypage-view"
 
 export default function MyPage() {
   return (

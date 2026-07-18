@@ -1,17 +1,17 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { LogOut, Mail } from 'lucide-react'
-import { useAuth } from '@/components/auth-provider'
-import { HistoryList } from '@/components/history-list'
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { LogOut, Mail } from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
+import { HistoryList } from "@/components/history-list"
 import {
   deleteFeedbackHistory,
   getSavedFeedbackHistory,
-} from '@/lib/feedbacks'
-import type { HistoryRecord } from '@/types/history'
-import { Button } from '@/components/ui/button'
+} from "@/lib/feedbacks"
+import type { HistoryRecord } from "@/types/history"
+import { Button } from "@/components/ui/button"
 
 export function MyPageView() {
   const { user, loading, logout } = useAuth()
@@ -24,7 +24,7 @@ export function MyPageView() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace('/auth/login')
+      router.replace("/auth/login")
     }
   }, [loading, user, router])
 
@@ -44,7 +44,7 @@ export function MyPageView() {
         setHistoryError(
           error instanceof Error
             ? error.message
-            : '学習履歴の取得に失敗しました。',
+            : "学習履歴の取得に失敗しました。",
         )
       } finally {
         setHistoryLoading(false)
@@ -83,7 +83,7 @@ export function MyPageView() {
       setHistoryError(
         error instanceof Error
           ? error.message
-          : '学習履歴の削除に失敗しました。',
+          : "学習履歴の削除に失敗しました。",
       )
     } finally {
       setDeletingId(null)
@@ -92,7 +92,7 @@ export function MyPageView() {
 
   async function handleLogout() {
     await logout()
-    router.push('/')
+    router.push("/")
   }
 
   if (loading || !user) {

@@ -1,6 +1,6 @@
-import { GoogleGenAI, Type } from '@google/genai'
-import { NextResponse } from 'next/server'
-import type { FeedbackResult } from '@/types/feedback'
+import { GoogleGenAI, Type } from "@google/genai"
+import { NextResponse } from "next/server"
+import type { FeedbackResult } from "@/types/feedback"
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -16,26 +16,26 @@ export async function POST(request: Request) {
 
     if (!text) {
       return NextResponse.json(
-        { error: '文章を入力してください。' },
+        { error: "文章を入力してください。" },
         { status: 400 },
       )
     }
 
     if (!process.env.GEMINI_API_KEY) {
-      console.error('GEMINI_API_KEY is not configured')
+      console.error("GEMINI_API_KEY is not configured")
 
       return NextResponse.json(
-        { error: 'AI添削機能の設定が完了していません。' },
+        { error: "AI添削機能の設定が完了していません。" },
         { status: 500 },
       )
     }
 
     // AI応答時間を計測
-    console.time('Gemini generation')
+    console.time("Gemini generation")
 
     const response = await ai.models.generateContent({
       // 速度重視モデル
-      model: 'gemini-3.1-flash-lite',
+      model: "gemini-3.1-flash-lite",
 
       contents: `
 あなたは日本語学習者向けの添削AIです。
@@ -58,44 +58,44 @@ ${text}
         // 出力を短く制限
         maxOutputTokens: 300,
 
-        responseMimeType: 'application/json',
+        responseMimeType: "application/json",
 
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             correctedText: {
               type: Type.STRING,
-              description: '修正後の文章',
+              description: "修正後の文章",
             },
             reason: {
               type: Type.STRING,
-              description: '修正理由（100文字以内）',
+              description: "修正理由（100文字以内）",
             },
           },
-          required: ['correctedText', 'reason'],
+          required: ["correctedText", "reason"],
         },
       },
     })
 
-    console.timeEnd('Gemini generation')
+    console.timeEnd("Gemini generation")
 
     if (!response.text) {
-      throw new Error('Geminiから添削結果を取得できませんでした。')
+      throw new Error("Geminiから添削結果を取得できませんでした。")
     }
 
     const parsed = JSON.parse(response.text) as FeedbackResult
 
     if (!parsed.correctedText || !parsed.reason) {
-      throw new Error('Geminiの添削結果の形式が正しくありません。')
+      throw new Error("Geminiの添削結果の形式が正しくありません。")
     }
 
     return NextResponse.json(parsed)
   } catch (error) {
-    console.error('Gemini review error:', error)
+    console.error("Gemini review error:", error)
 
     return NextResponse.json(
       {
-        error: 'AI添削に失敗しました。時間を置いて再度お試しください。',
+        error: "AI添削に失敗しました。時間を置いて再度お試しください。",
       },
       {
         status: 500,

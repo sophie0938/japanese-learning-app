@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import type { UserSentence } from '@/types/sentence'
+import { supabase } from "@/lib/supabase"
+import type { UserSentence } from "@/types/sentence"
 
 interface UserSentenceRow {
   id: string
@@ -25,7 +25,7 @@ export async function createSentence(input: {
   originalText: string
 }): Promise<UserSentence> {
   const { data, error } = await supabase
-    .from('user_sentences')
+    .from("user_sentences")
     .insert({
       user_id: input.userId,
       word_id: input.wordId,
@@ -35,8 +35,8 @@ export async function createSentence(input: {
     .single()
 
   if (error) {
-    console.error('Failed to create sentence:', error)
-    throw new Error('文章の保存に失敗しました。')
+    console.error("Failed to create sentence:", error)
+    throw new Error("文章の保存に失敗しました。")
   }
 
   return mapUserSentence(data as UserSentenceRow)
@@ -46,14 +46,14 @@ export async function getSentence(
   id: string,
 ): Promise<UserSentence | undefined> {
   const { data, error } = await supabase
-    .from('user_sentences')
-    .select('*')
-    .eq('id', id)
+    .from("user_sentences")
+    .select("*")
+    .eq("id", id)
     .maybeSingle()
 
   if (error) {
-    console.error('Failed to fetch sentence:', error)
-    throw new Error('文章の取得に失敗しました。')
+    console.error("Failed to fetch sentence:", error)
+    throw new Error("文章の取得に失敗しました。")
   }
 
   return data ? mapUserSentence(data as UserSentenceRow) : undefined
@@ -64,20 +64,20 @@ export async function updateSentence(input: {
   originalText: string
 }): Promise<void> {
   const { data, error } = await supabase
-    .from('user_sentences')
+    .from("user_sentences")
     .update({
       original_text: input.originalText,
     })
-    .eq('id', input.sentenceId)
-    .select('id')
+    .eq("id", input.sentenceId)
+    .select("id")
     .single()
 
   if (error) {
-    console.error('Failed to update sentence:', error)
-    throw new Error('文章の更新に失敗しました。')
+    console.error("Failed to update sentence:", error)
+    throw new Error("文章の更新に失敗しました。")
   }
 
   if (!data) {
-    throw new Error('更新する文章が見つかりませんでした。')
+    throw new Error("更新する文章が見つかりませんでした。")
   }
 }

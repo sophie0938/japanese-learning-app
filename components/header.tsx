@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { BookOpen, LogOut, User } from 'lucide-react'
-import { useAuth } from '@/components/auth-provider'
-import { Button } from '@/components/ui/button'
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { BookOpen, LogOut, User } from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
+import { Button } from "@/components/ui/button"
 
 export function Header() {
   const { user, logout } = useAuth()
@@ -12,7 +12,7 @@ export function Header() {
 
   function handleLogout() {
     logout()
-    router.push('/')
+    router.push("/")
   }
 
   return (

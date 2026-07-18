@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import {
   createContext,
@@ -7,8 +7,8 @@ import {
   useEffect,
   useState,
   type ReactNode,
-} from 'react'
-import { supabase } from '@/lib/supabase'
+} from "react"
+import { supabase } from "@/lib/supabase"
 
 export interface AuthUser {
   id: string
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         setUser({
           id: session.user.id,
-          email: session.user.email ?? '',
+          email: session.user.email ?? "",
         })
       } else {
         setUser(null)
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         setUser({
           id: session.user.id,
-          email: session.user.email ?? '',
+          email: session.user.email ?? "",
         })
       } else {
         setUser(null)
@@ -109,6 +109,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider")
   return ctx
 }

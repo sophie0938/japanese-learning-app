@@ -1,17 +1,17 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Check, Loader2, Save } from 'lucide-react'
-import { FeedbackCard } from '@/components/feedback-card'
-import { getFeedbackById, saveFeedback } from '@/lib/feedbacks'
-import { getSentence } from '@/lib/sentences'
-import { getWordById } from '@/lib/words'
-import type { AiFeedback } from '@/types/feedback'
-import type { UserSentence } from '@/types/sentence'
-import type { Word } from '@/types/word'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Check, Loader2, Save } from "lucide-react"
+import { FeedbackCard } from "@/components/feedback-card"
+import { getFeedbackById, saveFeedback } from "@/lib/feedbacks"
+import { getSentence } from "@/lib/sentences"
+import { getWordById } from "@/lib/words"
+import type { AiFeedback } from "@/types/feedback"
+import type { UserSentence } from "@/types/sentence"
+import type { Word } from "@/types/word"
+import { Button } from "@/components/ui/button"
 
 export function ReviewView({ reviewId }: { reviewId: string }) {
   const router = useRouter()
@@ -55,7 +55,7 @@ export function ReviewView({ reviewId }: { reviewId: string }) {
         setError(
           e instanceof Error
             ? e.message
-            : '添削結果の取得に失敗しました。',
+            : "添削結果の取得に失敗しました。",
         )
       } finally {
         setReady(true)
@@ -79,12 +79,12 @@ export function ReviewView({ reviewId }: { reviewId: string }) {
         saved: true,
       })
 
-      router.push('/mypage')
+      router.push("/mypage")
     } catch (e) {
       setError(
         e instanceof Error
           ? e.message
-          : '添削結果の保存に失敗しました。',
+          : "添削結果の保存に失敗しました。",
       )
       setSaving(false)
     }
@@ -129,13 +129,13 @@ export function ReviewView({ reviewId }: { reviewId: string }) {
   return (
     <div className="flex flex-col gap-6">
       <p className="text-sm text-muted-foreground">
-        単語{' '}
+        単語{" "}
         <Link
           href={`/words/${word.id}`}
           className="font-semibold text-foreground hover:text-primary"
         >
           {word.word}
-        </Link>{' '}
+        </Link>{" "}
         を使った文章の添削です。
       </p>
 
